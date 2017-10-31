@@ -1,9 +1,33 @@
+-------------------------------------------分割綫-------------------------------------------------------
+
+
+
+
 <script id="tpl-user" type="text/html">
     {{if user}}
     <h2>{{user.name}}</h2>
     {{/if}}
 </script>
+<script id="comment-tpl" type="text/html">
+    <div id="comment-{{page}}" class="comment">
+        {{page}}---{{comments[0].id}}
+        page000：<%=page%>
 
+        <% for (var i = 0; i < comments.length; i ++) { %>
+        <li><%= i + 1 %> ：<%= comments[i].id %></li>
+        <% } %>
+        ------------------
+        {{each comments}}
+        {{index}}
+        {{/each}}
+
+    </div>
+</script>
+<div>
+    <div id="comment-listd" class="comment-listd">
+
+    </div>
+</div>
 <div>
     <div id="comment-list" class="comment-list">
         <div>
@@ -41,8 +65,8 @@
                     <div>
                         <div class="author">
                             <a href="/u/36020b860fed" target="_blank" class="avatar">
-                            <img
-                                src="//upload.jianshu.io/users/upload_avatars/4122802/c5ad2db019ad?imageMogr2/auto-orient/strip|imageView2/1/w/114/h/114">
+                                <img
+                                        src="//upload.jianshu.io/users/upload_avatars/4122802/c5ad2db019ad?imageMogr2/auto-orient/strip|imageView2/1/w/114/h/114">
                             </a>
                             <div class="info"><a href="/u/36020b860fed" target="_blank" class="name">reysun</a> <!---->
                                 <div class="meta"><span>2楼 · 2017.02.28 12:46</span></div>
@@ -67,7 +91,7 @@
                                 <a href="/u/84f19a3d581e" target="_blank">fwytech</a>：
                                 <span>
                                     <a href="/users/36020b860fed" class="maleskine-author" target="_blank"
-                                         data-user-slug="36020b860fed">@ReySun
+                                       data-user-slug="36020b860fed">@ReySun
                                     </a>
                                     环境搭建倒不要求，但后期的代码要求，最好先去了解下typescript
                                 </span>
@@ -85,8 +109,8 @@
                         <div id="comment-8440056" class="sub-comment">
                             <p>
                                 <a href="/u/36020b860fed" target="_blank">reysun</a>：
-                            <span><a href="/users/84f19a3d581e" class="maleskine-author" target="_blank"
-                                     data-user-slug="84f19a3d581e">@fwytech</a> 嗯嗯，好的</span></p>
+                                <span><a href="/users/84f19a3d581e" class="maleskine-author" target="_blank"
+                                         data-user-slug="84f19a3d581e">@fwytech</a> 嗯嗯，好的</span></p>
                             <div class="sub-tool-group"><span>2017.02.28 13:26</span> <a class=""><i
                                     class="iconfont ic-comment"></i> <span>回复</span></a> <a
                                     class="report"><span>举报</span></a> <!----></div>
