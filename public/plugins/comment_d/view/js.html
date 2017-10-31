@@ -204,6 +204,22 @@
                 }
             ]
         };
+//过滤器
+        template.defaults.imports.htmlFormat = function(html){
+            function parseToDOM(str){
+                var div = document.createElement("div");
+                if(typeof str == "string")
+                    div.innerHTML = str;
+//                console.log(div);
+                return div.childNodes;
+            }
+            console.log(html);
+            console.log("return:"+parseToDOM(html));
+            var nodelist = parseToDOM("<b>hello world</b>");
+            return nodelist;
+        };
+
+
 //    var writeFunctionBlockTpl = $('.write-function-block-tpl').html();
         var html22 = template('test22');
         $(".new-comment:first textarea").one('focus',function () {
@@ -212,18 +228,9 @@
             $(".new-comment:first .write-function-block").slideDown();
         })
 
-
-        var data = {
-            title: '基本例子',
-            isAdmin: true,
-            list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']
-        };
         var html = template('comment-tpl', data_json);
-        document.getElementById('comment-listd').innerHTML = html;
+        document.getElementById('c-tpl').innerHTML = html;
 
-
-        var html = template('test', data);
-        document.getElementById('contentddd').innerHTML = html;
 
 //    回复后，会返回一个json
 //    {
