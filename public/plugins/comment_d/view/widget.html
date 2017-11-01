@@ -1,0 +1,166 @@
+<!--评论循环-->
+<script id="comment-tpl" type="text/html">
+    <% for (var i = 0; i < comments.length; i ++) { %>
+        <div id="comment-<%= comments[i].id %>" class="comment">
+            <div>
+                <div class="author">
+                    <a href="/u/<%= comments[i].user_id %>" target="_blank" class="avatar">
+                        <img
+                                src="<%= comments[i].user.avatar %>">
+                    </a>
+                    <div class="info"><a href="/u/<%= comments[i].user.slug %>" target="_blank" class="name"><%= comments[i].user.nickname %></a> <!---->
+                        <div class="meta"><span><%= comments[i].floor %>楼 · <%= comments[i].created_at %></span></div>
+                    </div>
+                </div>
+                <div class="comment-wrap">
+                    <p>
+                        <%- comments[i].compiled_content %>
+                    </p>
+                    <div class="tool-group">
+                        <a class="">
+                            <% if ( comments[i].liked) { %>
+                                <i class="fa fa-thumbs-up" style="color: #d44950;" aria-hidden="true"></i>
+                            <% } else { %>
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            <% } %>
+                            <% if ( comments[i].likes_count>0 ) { %>
+                            <span><%= comments[i].likes_count %>人赞</span>
+                            <% } else { %>
+                            <span>赞</span>
+                            <% } %>
+                        </a>
+                        <a class=""><i class="fa fa-comment-o" aria-hidden="true"></i> <span>回复</span>
+                        </a>
+                        <a class="report">
+                            <span>举报</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <% if ( comments[i].children_count>0) { %>
+                <div class="sub-comment-list">
+                    <% for (var o = 0; o< 3;o ++) { %>
+                    <div id="comment-<%= comments[i].children[o].id %>" class="sub-comment">
+                        <p>
+                            <a href="/u/<%=  comments[i].children[o].user.slug %>" target="_blank"><%=  comments[i].children[o].user.nickname %></a>：
+                            <span>
+                               <%-  comments[i].children[o].compiled_content %>
+                    </span>
+                        </p>
+                        <div class="sub-tool-group">
+                            <span><%=  comments[i].children[o].created_at %></span>
+                            <a class=""><i class="fa fa-1 fa-comment-o" aria-hidden="true"></i>
+                                <span>回复</span>
+                            </a>
+                            <a class="report">
+                                <span>举报</span>
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% if ( comments[i].children_count -3>0) { %>
+                    <div class="sub-comment more-comment">
+                        <a class="add-comment-btn">
+                            <i class="iconfont ic-subcomment"></i>
+                            <span>添加新评论</span>
+                        </a>
+                        <span class="line-warp">还有<%= comments[i].children_count -3 %>条评论，<a>展开查看</a></span>
+                    </div>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+        <% } %>
+</script>
+
+<!--提交框-->
+<script id="comment-reply-tpl" type="text/html">
+    <div>
+        <form class="new-comment">
+            <textarea placeholder="写下你的评论..."></textarea>
+            <div class="write-function-block">
+                <div data-v-b36e9416="" class="emoji-modal-wrap">
+                    <a data-v-b36e9416="" class="emoji">
+                        <i data-v-b36e9416="" class="iconfont ic-comment-emotions"></i>
+                    </a>
+                </div>
+                <div class="hint">Ctrl+Return 发表</div>
+                <a class="btn btn-send">发送</a> <a class="cancel">取消</a>
+            </div>
+        </form>
+    </div>
+</script>
+
+<!--loading动画-->
+<script id="placeholder-tpl" type="text/html">
+    <div class="comments-placeholder">
+        <div class="author">
+            <div class="avatar"></div>
+            <div class="info">
+                <div class="name"></div>
+                <div class="meta"></div>
+            </div>
+        </div>
+        <div class="text"></div>
+        <div class="text animation-delay"></div>
+        <div class="tool-group"><i class="iconfont ic-zan-active"></i>
+            <div class="zan"></div>
+            <i class="iconfont ic-list-comments"></i>
+            <div class="zan"></div>
+        </div>
+    </div>
+</script>
+
+<!--主评论框提交条下拉-->
+<script id="write-function-block-tpl" type="text/html">
+    <div class="write-function-block" style="display: none;">
+        <div data-v-b36e9416="" class="emoji-modal-wrap">
+            <a data-v-b36e9416="" class="emoji">
+                <i data-v-b36e9416="" class="iconfont ic-comment-emotions"></i>
+            </a>
+        </div>
+        <div class="hint">Ctrl+Return 发表</div>
+        <a class="btn btn-send">发送</a>
+        <a class="cancel">取消</a>
+    </div>
+</script>
+
+<script id="pagination-tpl" type="text/html">
+        <ul class="pagination">
+            <li><a>上一页</a></li>
+            <li><a>1</a></li>
+            <li><a href="javascript:void(null)" class="active">2</a></li>
+            <li><a>3</a></li>
+            <li><a>4</a></li>
+            <li><a>5</a></li>
+            <li><a>下一页</a></li>
+        </ul>
+</script>
+
+
+<!--主代码-->
+<div>
+    <div id="comment-list" class="comment-list">
+        <div>
+            <form class="new-comment">
+                <a class="avatar">
+                    <img src="http://cdn2.jianshu.io/assets/default_avatar/3-9a2bcc21a5d89e21dafc73b39dc5f582.jpg">
+                </a>
+                <textarea placeholder="写下你的评论..."></textarea>
+            </form>
+        </div>
+        <div id="normal-comment-list" class="normal-comment-list">
+            <div>
+                <div>
+                    <div class="top">
+                        <!--此字段为后台传入，这样做节省了json，而且此字段是固定值 适宜从后台传入 算是最佳实践-->
+                        <span>{$totalNum}条评论</span>
+                    </div>
+                </div>
+                <div id="c-tpl"></div>
+            </div>
+        </div>
+        <div id="pag02"></div>
+    </div>
+</div>
+
