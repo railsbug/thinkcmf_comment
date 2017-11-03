@@ -697,3 +697,12 @@ a:focus {
     width: 24px;
     height: 12px
 }
+
+.sub-comment-list{
+    animation-duration: 250ms;
+    animation-delay: 0ms;
+}
+.sub-comment-list>div:last-child{
+    animation-duration: 250ms;
+    animation-delay: 0ms;
+}

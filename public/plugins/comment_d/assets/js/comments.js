@@ -118,24 +118,48 @@ $(function(){
             var isReplyTplShown = commentEle.find('.new-comment').length == 1;
             var mainCommentId = takeId(commentEle.attr("id"));
             var dataId = commentEle.data("dataId");
+            var userName = commentEle.find(".info a").text();
             if(dataId==undefined) {
                 commentEle.data("dataId", mainCommentId);
             }
+            commentEle.data("dataId", mainCommentId);
             var data = {
+                userName:userName,
+                html:html,
+                commentEle:commentEle,
                 isSubCommentListHide:isSubCommentListHide,
                 hasSubComment:hasSubComment,
                 isReplyTplShown:isReplyTplShown,
                 dataId:dataId,
                 mainCommentId:mainCommentId
             }
-            var state = isReplyTplShouldBeShown(e,data);
-            if(state==1){
-                commentEle.find('.sub-comment-list').removeClass('hide').append(html);
-            }
+            isReplyTplShouldBeShown(e,data);
         })
 
 
         $('.comment').bind("childReply",function (e) {
+            var html = template('comment-reply-tpl', {});
+            var commentEle = $(e.currentTarget);
+            var isReplyTplShown = commentEle.find('.new-comment').length == 1;
+            var mainCommentId = takeId(commentEle.attr("id"));
+            var childCommentId = takeId($(e.target).parents(".sub-comment").attr("id"));
+            var dataId = commentEle.data("dataId");
+            var mainUserName = commentEle.find(".info a").text();
+            var chlidUserName = $(e.target).parents(".sub-comment").find("p>a").text();
+            if(dataId==undefined) {
+                commentEle.data("dataId", childCommentId);
+            }
+            commentEle.data("dataId", childCommentId);
+            var data = {
+                childCommentId:childCommentId,
+                mainUserName:mainUserName,
+                chlidUserName:chlidUserName,
+                html:html,
+                commentEle:commentEle,
+                isReplyTplShown:isReplyTplShown,
+                dataId:dataId,
+                mainCommentId:mainCommentId
+            }
             isReplyTplShouldBeShown(e, data);
         })
 
@@ -144,57 +168,77 @@ $(function(){
         }
 
         function isReplyTplShouldBeShown (e,data) {
+            var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+            // css动画在这里设置
+            var animationIn = "fadeInUp";
+            var animationOut = "fadeOutDown";
+            var subCommentListEle = data.commentEle.find('.sub-comment-list');
             switch (e.type)
             {
                 case "mainReply":
-                    // if(data.isSubCommentListHide){
-                    //     return 1;
-                    // }
-                    if(data.isReplyTplShown) {
-                        return false;
+                    if(!data.hasSubComment){//无子评论
+                        if(!data.isReplyTplShown){//无回复框
+                            subCommentListEle.removeClass("hide");
+                            subCommentListEle.append(data.html);
+                            data.commentEle.find('.new-comment textarea').text("@"+data.userName);
+                            subCommentListEle.addClass('animated '+animationIn).one(animationEnd, function() {
+                                subCommentListEle.removeClass('animated '+animationIn);
+                            });
+                        }else { //有回复框
+                            if(data.dataId == data.mainCommentId ){//同一按钮点击
+                                subCommentListEle.addClass('animated '+animationOut).one(animationEnd, function() {
+                                    subCommentListEle.removeClass('animated '+animationOut);
+                                    subCommentListEle.empty();
+                                    subCommentListEle.addClass('hide');
+                                });
+
+                            }else{ //不同按钮点击
+                                data.commentEle.find('.new-comment textarea').text("@"+data.userName);
+                            }
+
+                        }
+                    }else {//有子评论
+                        if(!data.isReplyTplShown){//无回复框
+                            subCommentListEle.append(data.html);
+                            data.commentEle.find('.new-comment textarea').text("@"+data.userName);
+                            subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
+                                subCommentListEle.children("div:last").removeClass('animated '+animationIn);
+                            });
+                        }else { //有回复框
+                            if(data.dataId == data.mainCommentId ){//同一按钮点击
+                                subCommentListEle.children("div:last").addClass('animated '+animationOut).one(animationEnd, function() {
+                                    subCommentListEle.children("div:last").removeClass('animated '+animationOut);
+                                    subCommentListEle.children("div:last").remove();
+                                });
+                            }else{ //不同按钮点击
+                                data.commentEle.find('.new-comment textarea').text("@"+data.userName);
+                            }
+
+                        }
                     }
-                    return 1;
+                    break;
                 case "childReply":
-                    x="Today it's Sunday";
+                    if(!data.isReplyTplShown){//无回复框
+                        subCommentListEle.append(data.html);
+                        data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName);
+                        subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
+                            subCommentListEle.children("div:last").removeClass('animated '+animationIn);
+                        });
+                    }else { //有回复框
+                        if(data.dataId == data.childCommentId ){//同一按钮点击
+                            subCommentListEle.children("div:last").addClass('animated '+animationOut).one(animationEnd, function() {
+                                subCommentListEle.children("div:last").removeClass('animated '+animationOut);
+                                subCommentListEle.children("div:last").remove();
+                            });
+                        }else{ //不同按钮点击
+                            data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName);
+                        }
+                    }
                     break;
             }
 
         }
 
-    }
-
-
-
-
-    
-    function hookEvent() {
-        // $(".tool-group").each(function (i) {
-        //     $(this).find("a").eq(1).toggle(function () {
-        //         var newC = $(this).parents('.comment').find('.new-comment');
-        //         // 查看子回复框是否已经加载过 如果加载过 show出来 没加载过 加载之
-        //         if($(newC).length) {
-        //             newC.show();
-        //         }else {
-        //             var html = template('comment-reply-tpl', {});
-        //             $(this).parents('.comment').find('.more-comment').after(html);
-        //         }
-        //     },function () {
-        //         // 隐藏子回复框
-        //         $(this).parents('.comment').find('.new-comment').hide();
-        //     })
-        //
-        //
-        //     // $(this).find("a").eq(1).on('click',function () {
-        //     //     console.log(2222);
-        //     //
-        //     // });
-        // })
-        // $(".tool-group a").first().on('click', function () {
-        //     console.log(123);
-        // });
-        // $(".tool-group a").last().on('click', function () {
-        //     console.log(456);
-        // });
     }
 
 
