@@ -40,23 +40,7 @@
             <div class="sub-comment-list <%= comments[i].children_count==0 ?'hide':'' %>" >
                 <% if ( comments[i].children_count>0) { %>
                         <% for (var o = 0; o<comments[i].children.length;o ++) { %>
-                            <div id="comment-<%= comments[i].children[o].id %>" class="sub-comment">
-                                <p>
-                                    <a href="/u/<%=  comments[i].children[o].user.slug %>" target="_blank"><%=  comments[i].children[o].user.nickname %></a>：
-                                    <span>
-                                       <%-  comments[i].children[o].compiled_content %>
-                            </span>
-                                </p>
-                                <div class="sub-tool-group">
-                                    <span><%=  comments[i].children[o].created_at %></span>
-                                    <a class=""><i class="fa fa-1 fa-comment-o" aria-hidden="true"></i>
-                                        <span>回复</span>
-                                    </a>
-                                    <a class="report">
-                                        <span>举报</span>
-                                    </a>
-                                </div>
-                            </div>
+                                <% include('comment-single-tpl', comments[i].children[o]) %>
                         <% } %>
                         <% if ( comments[i].children_count -3>0) { %>
                             <div class="sub-comment more-comment">
@@ -73,23 +57,39 @@
         <% } %>
 </script>
 
+<!--单个子评论框-->
+<script id="comment-single-tpl" type="text/html">
+    <div id="comment-<%= id %>" class="sub-comment">
+        <p>
+            <a href="/u/<%=  user.slug %>" target="_blank"><%=  user.nickname %></a>：
+            <span>
+                <%- compiled_content %>
+            </span>
+        </p>
+        <div class="sub-tool-group">
+            <span><%=  created_at %></span>
+            <a class="">
+                <i class="fa fa-1 fa-comment-o" aria-hidden="true"></i>
+                <span>回复</span>
+            </a>
+            <a class="report">
+                <span>举报</span>
+            </a>
+        </div>
+    </div>
+</script>
+
+
 <!--提交框-->
 <script id="comment-reply-tpl" type="text/html">
     <div>
         <form class="new-comment">
             <textarea placeholder="写下你的评论..."></textarea>
-            <div class="write-function-block">
-                <div data-v-b36e9416="" class="emoji-modal-wrap">
-                    <a data-v-b36e9416="" class="emoji">
-                        <i data-v-b36e9416="" class="iconfont ic-comment-emotions"></i>
-                    </a>
-                </div>
-                <div class="hint">Ctrl+Return 发表</div>
-                <a class="btn btn-send">发送</a> <a class="cancel">取消</a>
-            </div>
+            <% include('write-function-block-tpl', {value:"true"}) %>
         </form>
     </div>
 </script>
+
 
 <!--loading动画-->
 <script id="placeholder-tpl" type="text/html">
@@ -113,7 +113,11 @@
 
 <!--主评论框提交条下拉-->
 <script id="write-function-block-tpl" type="text/html">
-    <div class="write-function-block" style="display: none;">
+        <% if (value=="true") { %>
+                <div class="write-function-block " >
+            <% } else { %>
+                <div class="write-function-block" style="display: none">
+        <% } %>
         <div data-v-b36e9416="" class="emoji-modal-wrap">
             <a data-v-b36e9416="" class="emoji">
                 <i data-v-b36e9416="" class="iconfont ic-comment-emotions"></i>

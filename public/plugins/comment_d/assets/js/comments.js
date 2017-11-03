@@ -1,7 +1,7 @@
 $(function(){
 
 //        主评论框点击焦点下拉出提交按钮
-    var writeFunctionBlockTpl = $('#write-function-block-tpl').html();
+    var writeFunctionBlockTpl = template('write-function-block-tpl',{});
     $(".new-comment:first textarea").one('focus',function () {
         $(".new-comment:first").append(writeFunctionBlockTpl);
         $(".new-comment:first .write-function-block").slideDown();
@@ -76,9 +76,6 @@ $(function(){
 
     function hookEvent2() {
 
-        var html = template('comment-reply-tpl', {});
-
-
             $(".tool-group").each(function (e) {
         // 赞
         //         $(this).find("a").eq(0).on("click",function () {
@@ -94,6 +91,7 @@ $(function(){
             // $(this).find("a").eq(2).on("click",function () {
             //     $(this).trigger("aaa");
             // });
+
             });
 
         $(".sub-tool-group").each(function (e) {
@@ -110,7 +108,12 @@ $(function(){
 
         })
 
+        var animationIn = "fadeInUp";
+        var animationOut = "fadeOutDown";
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
         $('.comment').bind("mainReply",function (e) {
+
             var html = template('comment-reply-tpl', {});
             var commentEle = $(e.currentTarget);
             var isSubCommentListHide =  commentEle.find('.sub-comment-list').hasClass("hide");
@@ -141,6 +144,7 @@ $(function(){
             var html = template('comment-reply-tpl', {});
             var commentEle = $(e.currentTarget);
             var isReplyTplShown = commentEle.find('.new-comment').length == 1;
+            var hasSubComment = commentEle.find('.sub-comment').length>0;
             var mainCommentId = takeId(commentEle.attr("id"));
             var childCommentId = takeId($(e.target).parents(".sub-comment").attr("id"));
             var dataId = commentEle.data("dataId");
@@ -155,6 +159,7 @@ $(function(){
                 mainUserName:mainUserName,
                 chlidUserName:chlidUserName,
                 html:html,
+                hasSubComment:hasSubComment,
                 commentEle:commentEle,
                 isReplyTplShown:isReplyTplShown,
                 dataId:dataId,
@@ -168,10 +173,7 @@ $(function(){
         }
 
         function isReplyTplShouldBeShown (e,data) {
-            var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
             // css动画在这里设置
-            var animationIn = "fadeInUp";
-            var animationOut = "fadeOutDown";
             var subCommentListEle = data.commentEle.find('.sub-comment-list');
             switch (e.type)
             {
@@ -180,6 +182,7 @@ $(function(){
                         if(!data.isReplyTplShown){//无回复框
                             subCommentListEle.removeClass("hide");
                             subCommentListEle.append(data.html);
+                            activeTplActions(data);
                             data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             subCommentListEle.addClass('animated '+animationIn).one(animationEnd, function() {
                                 subCommentListEle.removeClass('animated '+animationIn);
@@ -200,6 +203,7 @@ $(function(){
                     }else {//有子评论
                         if(!data.isReplyTplShown){//无回复框
                             subCommentListEle.append(data.html);
+                            activeTplActions(data);
                             data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
                                 subCommentListEle.children("div:last").removeClass('animated '+animationIn);
@@ -220,6 +224,7 @@ $(function(){
                 case "childReply":
                     if(!data.isReplyTplShown){//无回复框
                         subCommentListEle.append(data.html);
+                        activeTplActions(data);
                         data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName);
                         subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
                             subCommentListEle.children("div:last").removeClass('animated '+animationIn);
@@ -239,8 +244,55 @@ $(function(){
 
         }
 
-    }
+        function activeTplActions(data){
+            data.commentEle.find('.new-comment .btn').click(function(){
+                $(this).trigger("replyBtn",data);
+            });
+            data.commentEle.find('.new-comment .cancel').click(function () {
+                $(this).trigger("cancelBtn",data);
+            });
+        }
 
+        $('.comment').bind("replyBtn",function (e,data) {
+            var subCommentListEle = data.commentEle.find('.sub-comment-list');
+            $.ajax({
+                url: "http://localhost/thinkc/public/comment02.json",
+                type: 'POST',
+                data: {
+                    name:"duan"
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var html = template('comment-single-tpl', data);
+                    subCommentListEle.find(".sub-comment:last").after(html);
+                    subCommentListEle.find(".sub-comment:last").animate({
+                        borderColor:"#ce352c",
+                        color:"#ce352c"
+                    }, 100 ).animate({
+                        borderColor:"#f0f0f0",
+                        color:"#333"
+                    }, 3000 );
+                }
+            });
+
+        });
+        $('.comment').bind("cancelBtn",function (e,data) {
+            var subCommentListEle = data.commentEle.find('.sub-comment-list');
+            if(!data.hasSubComment){
+                subCommentListEle.addClass('animated '+animationOut).one(animationEnd, function() {
+                    subCommentListEle.removeClass('animated '+animationOut);
+                    subCommentListEle.empty();
+                    subCommentListEle.addClass('hide');
+                });
+            }else{
+                subCommentListEle.children("div:last").addClass('animated '+animationOut).one(animationEnd, function() {
+                    subCommentListEle.children("div:last").removeClass('animated '+animationOut);
+                    subCommentListEle.children("div:last").remove();
+                })
+            }
+        });
+
+    }
 
 //    回复后，会返回一个json
 //    {
@@ -256,4 +308,25 @@ $(function(){
 //    }
 //    }
 
+
+    // 文章回复
+    // {
+    //     "id": 16931044,
+    //     "compiled_content": "以后听说越来越严咯，有机会还是搞搞公租房试试吧",
+    //     "floor": 4,
+    //     "note_id": 19127728,
+    //     "user_id": 5275529,
+    //     "created_at": "2017-11-03T16:18:51.000+08:00",
+    //     "user": {
+    //     "id": 5275529,
+    //         "slug": "dd78fdb24823",
+    //         "nickname": "游戏化",
+    //         "avatar": "http://upload.jianshu.io/users/upload_avatars/5275529/e18e7b48-4cd9-4fc8-9a88-a1ea6f4afc1a.png",
+    //         "is_author": false
+    // },
+    //     "liked": false,
+    //     "likes_count": 0,
+    //     "children_count": 0,
+    //     "children": []
+    // }
 })
