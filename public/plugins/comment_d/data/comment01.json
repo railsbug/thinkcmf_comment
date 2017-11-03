@@ -1,0 +1,19 @@
+ {
+     "id": 16931044,
+     "compiled_content": "以后听说越来越严咯，有机会还是搞搞公租房试试吧",
+     "floor": 4,
+     "note_id": 19127728,
+     "user_id": 5275529,
+     "created_at": "2017-11-03T16:18:51.000+08:00",
+     "user": {
+     "id": 5275529,
+         "slug": "dd78fdb24823",
+         "nickname": "游戏化",
+         "avatar": "http://upload.jianshu.io/users/upload_avatars/5275529/e18e7b48-4cd9-4fc8-9a88-a1ea6f4afc1a.png",
+         "is_author": false
+ },
+     "liked": false,
+     "likes_count": 0,
+     "children_count": 0,
+     "children": []
+ }
