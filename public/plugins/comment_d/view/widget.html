@@ -39,7 +39,7 @@
             </div>
             <div class="sub-comment-list <%= comments[i].children_count==0 ?'hide':'' %>" >
                 <% if ( comments[i].children_count>0) { %>
-                        <% for (var o = 0; o< 3;o ++) { %>
+                        <% for (var o = 0; o<comments[i].children.length;o ++) { %>
                             <div id="comment-<%= comments[i].children[o].id %>" class="sub-comment">
                                 <p>
                                     <a href="/u/<%=  comments[i].children[o].user.slug %>" target="_blank"><%=  comments[i].children[o].user.nickname %></a>：
