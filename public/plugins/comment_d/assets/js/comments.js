@@ -264,7 +264,14 @@ $(function(){
                 dataType: 'json',
                 success: function (data) {
                     var html = template('comment-single-tpl', data);
-                    subCommentListEle.find(".sub-comment:last").after(html);
+                    if(subCommentListEle.find(".more-comment").length){
+                        subCommentListEle.find(".sub-comment:last").before(html);
+                    }else{
+                        subCommentListEle.find(".sub-comment:last").after(html);
+                    }
+                    subCommentListEle.find(".sub-tool-group:last a").click(function(){
+                        $(this).trigger("childReply");
+                    })
                     subCommentListEle.find(".sub-comment:last").animate({
                         borderColor:"#ce352c",
                         color:"#ce352c"
