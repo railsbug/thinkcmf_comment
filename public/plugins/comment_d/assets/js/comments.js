@@ -263,11 +263,16 @@ $(function(){
                 },
                 dataType: 'json',
                 success: function (data) {
+                    console.log(1234);
                     var html = template('comment-single-tpl', data);
                     if(subCommentListEle.find(".more-comment").length){
                         subCommentListEle.find(".sub-comment:last").before(html);
                     }else{
-                        subCommentListEle.find(".sub-comment:last").after(html);
+                        if(subCommentListEle.find(".sub-comment:last").length){
+                            subCommentListEle.find(".sub-comment:last").after(html);
+                        }else{
+                            subCommentListEle.children('div').before(html);
+                        }
                     }
                     subCommentListEle.find(".sub-tool-group:last a").click(function(){
                         $(this).trigger("childReply");
