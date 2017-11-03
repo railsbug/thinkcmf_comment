@@ -46,7 +46,7 @@ $(function(){
                 var html = template('comment-tpl', data);
                 document.getElementById('c-tpl').innerHTML = html;
 
-                hookEvent();
+                hookEvent2();
 
                 // 分页
                 var options = {
@@ -73,29 +73,122 @@ $(function(){
         })
     }
 
-    
-    function hookEvent() {
-        $(".tool-group").each(function (i) {
-            $(this).find("a").eq(1).toggle(function () {
-                var newC = $(this).parents('.comment').find('.new-comment');
-                // 查看子回复框是否已经加载过 如果加载过 show出来 没加载过 加载之
-                if($(newC).length) {
-                    newC.show();
-                }else {
-                    var html = template('comment-reply-tpl', {});
-                    $(this).parents('.comment').find('.more-comment').after(html);
-                }
-            },function () {
-                // 隐藏子回复框
-                $(this).parents('.comment').find('.new-comment').hide();
+
+    function hookEvent2() {
+
+        var html = template('comment-reply-tpl', {});
+
+
+            $(".tool-group").each(function (e) {
+        // 赞
+        //         $(this).find("a").eq(0).on("click",function () {
+        //             $(this).trigger("aaa");
+        //     });
+
+            // 主回复
+            $(this).find("a").eq(1).on("click",function () {
+                $(this).trigger("mainReply");
+            });
+
+            // 举报
+            // $(this).find("a").eq(2).on("click",function () {
+            //     $(this).trigger("aaa");
+            // });
+            });
+
+        $(".sub-tool-group").each(function (e) {
+
+            // 子回复
+            $(this).find("a").eq(0).on('click',function () {
+                $(this).trigger("childReply");
             })
 
+            // 子举报
+            // $(this).find("a").eq(0).on('click',function () {
+            //     $(this).trigger("childReply");
+            // })
 
-            // $(this).find("a").eq(1).on('click',function () {
-            //     console.log(2222);
-            //
-            // });
         })
+
+        $('.comment').bind("mainReply",function (e) {
+            var html = template('comment-reply-tpl', {});
+            var commentEle = $(e.currentTarget);
+            var isSubCommentListHide =  commentEle.find('.sub-comment-list').hasClass("hide");
+            var hasSubComment = commentEle.find('.sub-comment').length>0;
+            var isReplyTplShown = commentEle.find('.new-comment').length == 1;
+            var mainCommentId = takeId(commentEle.attr("id"));
+            var dataId = commentEle.data("dataId");
+            if(dataId==undefined) {
+                commentEle.data("dataId", mainCommentId);
+            }
+            var data = {
+                isSubCommentListHide:isSubCommentListHide,
+                hasSubComment:hasSubComment,
+                isReplyTplShown:isReplyTplShown,
+                dataId:dataId,
+                mainCommentId:mainCommentId
+            }
+            var state = isReplyTplShouldBeShown(e,data);
+            if(state==1){
+                commentEle.find('.sub-comment-list').removeClass('hide').append(html);
+            }
+        })
+
+
+        $('.comment').bind("childReply",function (e) {
+            isReplyTplShouldBeShown(e, data);
+        })
+
+        function takeId(id) {
+            return id.split("-")[1];
+        }
+
+        function isReplyTplShouldBeShown (e,data) {
+            switch (e.type)
+            {
+                case "mainReply":
+                    // if(data.isSubCommentListHide){
+                    //     return 1;
+                    // }
+                    if(data.isReplyTplShown) {
+                        return false;
+                    }
+                    return 1;
+                case "childReply":
+                    x="Today it's Sunday";
+                    break;
+            }
+
+        }
+
+    }
+
+
+
+
+    
+    function hookEvent() {
+        // $(".tool-group").each(function (i) {
+        //     $(this).find("a").eq(1).toggle(function () {
+        //         var newC = $(this).parents('.comment').find('.new-comment');
+        //         // 查看子回复框是否已经加载过 如果加载过 show出来 没加载过 加载之
+        //         if($(newC).length) {
+        //             newC.show();
+        //         }else {
+        //             var html = template('comment-reply-tpl', {});
+        //             $(this).parents('.comment').find('.more-comment').after(html);
+        //         }
+        //     },function () {
+        //         // 隐藏子回复框
+        //         $(this).parents('.comment').find('.new-comment').hide();
+        //     })
+        //
+        //
+        //     // $(this).find("a").eq(1).on('click',function () {
+        //     //     console.log(2222);
+        //     //
+        //     // });
+        // })
         // $(".tool-group a").first().on('click', function () {
         //     console.log(123);
         // });

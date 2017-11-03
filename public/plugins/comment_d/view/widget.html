@@ -37,38 +37,38 @@
                     </div>
                 </div>
             </div>
-            <% if ( comments[i].children_count>0) { %>
-                <div class="sub-comment-list">
-                    <% for (var o = 0; o< 3;o ++) { %>
-                    <div id="comment-<%= comments[i].children[o].id %>" class="sub-comment">
-                        <p>
-                            <a href="/u/<%=  comments[i].children[o].user.slug %>" target="_blank"><%=  comments[i].children[o].user.nickname %></a>：
-                            <span>
-                               <%-  comments[i].children[o].compiled_content %>
-                    </span>
-                        </p>
-                        <div class="sub-tool-group">
-                            <span><%=  comments[i].children[o].created_at %></span>
-                            <a class=""><i class="fa fa-1 fa-comment-o" aria-hidden="true"></i>
-                                <span>回复</span>
-                            </a>
-                            <a class="report">
-                                <span>举报</span>
-                            </a>
-                        </div>
-                    </div>
-                    <% } %>
-                    <% if ( comments[i].children_count -3>0) { %>
-                    <div class="sub-comment more-comment">
-                        <a class="add-comment-btn">
-                            <i class="iconfont ic-subcomment"></i>
-                            <span>添加新评论</span>
-                        </a>
-                        <span class="line-warp">还有<%= comments[i].children_count -3 %>条评论，<a>展开查看</a></span>
-                    </div>
+            <div class="sub-comment-list <%= comments[i].children_count==0 ?'hide':'' %>" >
+                <% if ( comments[i].children_count>0) { %>
+                        <% for (var o = 0; o< 3;o ++) { %>
+                            <div id="comment-<%= comments[i].children[o].id %>" class="sub-comment">
+                                <p>
+                                    <a href="/u/<%=  comments[i].children[o].user.slug %>" target="_blank"><%=  comments[i].children[o].user.nickname %></a>：
+                                    <span>
+                                       <%-  comments[i].children[o].compiled_content %>
+                            </span>
+                                </p>
+                                <div class="sub-tool-group">
+                                    <span><%=  comments[i].children[o].created_at %></span>
+                                    <a class=""><i class="fa fa-1 fa-comment-o" aria-hidden="true"></i>
+                                        <span>回复</span>
+                                    </a>
+                                    <a class="report">
+                                        <span>举报</span>
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
+                        <% if ( comments[i].children_count -3>0) { %>
+                            <div class="sub-comment more-comment">
+                                <a class="add-comment-btn">
+                                    <i class="iconfont ic-subcomment"></i>
+                                    <span>添加新评论</span>
+                                </a>
+                                <span class="line-warp">还有<%= comments[i].children_count -3 %>条评论，<a>展开查看</a></span>
+                            </div>
+                        <% } %>
                     <% } %>
                 </div>
-            <% } %>
         </div>
         <% } %>
 </script>
