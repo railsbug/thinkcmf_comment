@@ -5,15 +5,15 @@ $(function(){
     var tan=1;
     $(".new-comment:first textarea").on('focus',function () {
         if(tan){
-            tan=0;
-            $(".new-comment:first").append(writeFunctionBlockTpl);
-            $(".new-comment:first").find('.btn').click(function () {
-                $(this).trigger("articleCommentReply");
-            })
-            $(".new-comment:first").find(".cancel").click(function () {
-                $(this).trigger("articleCommentReplyCancel");
-            });
-            $(".new-comment:first .write-function-block").slideDown();
+                tan=0;
+                $(".new-comment:first").append(writeFunctionBlockTpl);
+                $(".new-comment:first").find('.btn').click(function () {
+                    $(this).trigger("articleCommentReply");
+                })
+                $(".new-comment:first").find(".cancel").click(function () {
+                    $(this).trigger("articleCommentReplyCancel");
+                });
+                $(".new-comment:first .write-function-block").slideDown();
         };
     })
 
@@ -27,18 +27,18 @@ $(function(){
             dataType: 'json',
             success: function (data) {
                 var html = template('comment-tpl',{"comments": [data]});
+                var aaa =$("#c-tpl").prepend(html).find(".comment:first").find(".tool-group a").length;
+                console.log(aaa);
                 $("#c-tpl").prepend(html).find(".comment:first").animate({
                     borderColor:"#ce352c",
                     color:"#ce352c"
                 }, 100 ).animate({
                     borderColor:"#f0f0f0",
                     color:"#333"
-                }, 3000 ).find(".tool-group a").eq(1).on("click",function () {
-                    $(this).trigger("mainReply");
+                }, 3000 ).find(".tool-group a:first").on("click",function () {
+                    $(this).trigger("ddd");
+                    console.log("aasd");
                 });
-                listeningHook($(".comment:first"));
-
-                // listeningHook($("#c-tpl").find(".comment:first"))
             }
         })
 
@@ -110,7 +110,7 @@ $(function(){
                                 return "末页";
                             case "page":
                                 return page;
-                        }
+                            }
                     }
                 }
 
@@ -121,11 +121,12 @@ $(function(){
 
 
     function hookEvent2() {
-        $(".tool-group").each(function (e) {
-            // 赞
-            //         $(this).find("a").eq(0).on("click",function () {
-            //             $(this).trigger("aaa");
-            //     });
+
+            $(".tool-group").each(function (e) {
+        // 赞
+        //         $(this).find("a").eq(0).on("click",function () {
+        //             $(this).trigger("aaa");
+        //     });
 
             // 主回复
             $(this).find("a").eq(1).on("click",function () {
@@ -137,7 +138,7 @@ $(function(){
             //     $(this).trigger("aaa");
             // });
 
-        });
+            });
 
         $(".sub-tool-group").each(function (e) {
 
@@ -153,14 +154,11 @@ $(function(){
 
         })
 
-        listeningHook($(".comment"))
-    }
-
-    function listeningHook(v) {
         var animationIn = "fadeInUp";
         var animationOut = "fadeOutDown";
         var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-        v.bind("mainReply",function (e) {
+
+        $('.comment').bind("mainReply",function (e) {
             var html = template('comment-reply-tpl', {});
             var commentEle = $(e.currentTarget);
             var isSubCommentListHide =  commentEle.find('.sub-comment-list').hasClass("hide");
@@ -187,7 +185,7 @@ $(function(){
         })
 
 
-        v.bind("childReply",function (e) {
+        $('.comment').bind("childReply",function (e) {
             var html = template('comment-reply-tpl', {});
             var commentEle = $(e.currentTarget);
             var isReplyTplShown = commentEle.find('.new-comment').length == 1;
@@ -230,7 +228,7 @@ $(function(){
                             subCommentListEle.removeClass("hide");
                             subCommentListEle.append(data.html);
                             activeTplActions(data);
-                            data.commentEle.find('.new-comment textarea').text("@"+data.userName+" ").focus();
+                            data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             subCommentListEle.addClass('animated '+animationIn).one(animationEnd, function() {
                                 subCommentListEle.removeClass('animated '+animationIn);
                             });
@@ -243,7 +241,7 @@ $(function(){
                                 });
 
                             }else{ //不同按钮点击
-                                data.commentEle.find('.new-comment textarea').text("@"+data.userName+" ").focus();
+                                data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             }
 
                         }
@@ -251,7 +249,7 @@ $(function(){
                         if(!data.isReplyTplShown){//无回复框
                             subCommentListEle.append(data.html);
                             activeTplActions(data);
-                            data.commentEle.find('.new-comment textarea').text("@"+data.userName+" ").focus();
+                            data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
                                 subCommentListEle.children("div:last").removeClass('animated '+animationIn);
                             });
@@ -262,7 +260,7 @@ $(function(){
                                     subCommentListEle.children("div:last").remove();
                                 });
                             }else{ //不同按钮点击
-                                data.commentEle.find('.new-comment textarea').text("@"+data.userName+" ").focus();
+                                data.commentEle.find('.new-comment textarea').text("@"+data.userName);
                             }
 
                         }
@@ -272,7 +270,7 @@ $(function(){
                     if(!data.isReplyTplShown){//无回复框
                         subCommentListEle.append(data.html);
                         activeTplActions(data);
-                        data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName+" ").focus();
+                        data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName);
                         subCommentListEle.children("div:last").addClass('animated '+animationIn).one(animationEnd, function() {
                             subCommentListEle.children("div:last").removeClass('animated '+animationIn);
                         });
@@ -283,7 +281,7 @@ $(function(){
                                 subCommentListEle.children("div:last").remove();
                             });
                         }else{ //不同按钮点击
-                            data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName+" ").focus();
+                            data.commentEle.find('.new-comment textarea').text("@"+data.chlidUserName);
                         }
                     }
                     break;
@@ -292,14 +290,6 @@ $(function(){
         }
 
         function activeTplActions(data){
-          // 输入框滚动到视觉位置
-          //   var screenHeight = $(window).height() + $(window).scrollTop();
-          //   var commentHeight = data.commentEle.find('.new-comment').offset().top;
-          // if(commentHeight>screenHeight) {
-          //       var dValue = commentHeight-screenHeight;
-          //     $("html,body").animate({scrollTop:(screenHeight-200+dValue)+"px"},500);
-          // }
-          //   不用上面这段代码了 因为focus会自动定位回复框位置
             data.commentEle.find('.new-comment .btn').click(function(){
                 $(this).trigger("replyBtn",data);
             });
@@ -308,7 +298,7 @@ $(function(){
             });
         }
 
-        v.bind("replyBtn",function (e,data) {
+        $('.comment').bind("replyBtn",function (e,data) {
             var subCommentListEle = data.commentEle.find('.sub-comment-list');
             $.ajax({
                 url: "http://localhost/thinkc/public/comment02.json",
@@ -342,7 +332,7 @@ $(function(){
             });
 
         });
-        v.bind("cancelBtn",function (e,data) {
+        $('.comment').bind("cancelBtn",function (e,data) {
             var subCommentListEle = data.commentEle.find('.sub-comment-list');
             if(!data.hasSubComment){
                 subCommentListEle.addClass('animated '+animationOut).one(animationEnd, function() {
@@ -357,8 +347,8 @@ $(function(){
                 })
             }
         });
-    }
 
+    }
 
 //    回复后，会返回一个json
 //    {
@@ -396,102 +386,3 @@ $(function(){
     //     "children": []
     // }
 })
-
-
-// 展开查看 1条评论
-//     [
-//     {
-//         "id": 16849827,
-//         "compiled_content": "<a href=\"/users/5a7bba5d3447\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"5a7bba5d3447\">@曹好好</a> 哈哈，嗯嗯，对的，做自己喜欢的啦",
-//         "created_at": "2017-11-01T15:48:08.000+08:00",
-//         "user": {
-//             "id": 3519058,
-//             "slug": "71849bf13bea",
-//             "nickname": "柚子储储"
-//         }
-//     }
-//     ]
-//展开查看 8条评论
-// http://www.jianshu.com/comments/16956541/more_children?seen_comment_ids[]=16958833&seen_comment_ids[]=16958839&seen_comment_ids[]=16958994
-//     [
-//         {
-//             "id": 16959024,
-//             "compiled_content": " <a href=\"/users/11867d94064c\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"11867d94064c\">@李思怡ddup</a> 提醒注意。",
-//             "created_at": "2017-11-04T11:16:51.000+08:00",
-//             "user": {
-//                 "id": 7938930,
-//                 "slug": "5c614962630b",
-//                 "nickname": "不动心斋"
-//             }
-//         },
-//         {
-//             "id": 16960647,
-//             "compiled_content": "<a href=\"/users/5c614962630b\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"5c614962630b\">@不动心斋</a> 你这个坑我们九零后不背啊，九零后是一群怎样的存在我觉得你还是没有深刻的意识到，现在很多有价值的事情都是九零后在做在支撑的，你说九零后没有价值观，习大大都认为九零后是有创造力的一代，有希望的一代，你这觉悟还比习大大高了？",
-//             "created_at": "2017-11-04T12:12:46.000+08:00",
-//             "user": {
-//                 "id": 8118099,
-//                 "slug": "21d6bcc96645",
-//                 "nickname": "冷月月"
-//             }
-//         },
-//         {
-//             "id": 16960988,
-//             "compiled_content": " <a href=\"/users/21d6bcc96645\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"21d6bcc96645\">@冷月月</a> 所以，就有了“快手”啊；郭敬明现象啊；网红啊……什么什么的了啊？",
-//             "created_at": "2017-11-04T12:23:50.000+08:00",
-//             "user": {
-//                 "id": 7938930,
-//                 "slug": "5c614962630b",
-//                 "nickname": "不动心斋"
-//             }
-//         },
-//         {
-//             "id": 16961062,
-//             "compiled_content": " <a href=\"/users/21d6bcc96645\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"21d6bcc96645\">@冷月月</a> 前辈们是在鼓励我们，让我们迎难而上，不要同流合污！我也是90后。",
-//             "created_at": "2017-11-04T12:26:26.000+08:00",
-//             "user": {
-//                 "id": 7938930,
-//                 "slug": "5c614962630b",
-//                 "nickname": "不动心斋"
-//             }
-//         },
-//         {
-//             "id": 16961417,
-//             "compiled_content": "<a href=\"/users/5c614962630b\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"5c614962630b\">@不动心斋</a> 不要以点概面好吗，总挑那么个案例来代表大多数九零后，做结论要有数据支撑，你要能证明百分之八十的九零后都是网红都是郭敬明你再下这种结论",
-//             "created_at": "2017-11-04T12:39:16.000+08:00",
-//             "user": {
-//                 "id": 8118099,
-//                 "slug": "21d6bcc96645",
-//                 "nickname": "冷月月"
-//             }
-//         },
-//         {
-//             "id": 16961551,
-//             "compiled_content": " <a href=\"/users/21d6bcc96645\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"21d6bcc96645\">@冷月月</a> 最可恶的就是郭敬明现象！我以前真傻，单知道，影视圈里有丑恶现象，没想到，能蔓延到写作圈！真是“国将不国”，这是一件“很妈妈的事”！不痛快。",
-//             "created_at": "2017-11-04T12:44:58.000+08:00",
-//             "user": {
-//                 "id": 7938930,
-//                 "slug": "5c614962630b",
-//                 "nickname": "不动心斋"
-//             }
-//         },
-//         {
-//             "id": 16961623,
-//             "compiled_content": " <a href=\"/users/5c614962630b\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"5c614962630b\">@不动心斋</a> 00后在此",
-//             "created_at": "2017-11-04T12:47:47.000+08:00",
-//             "user": {
-//                 "id": 5384849,
-//                 "slug": "016ade8e8069",
-//                 "nickname": "vv栩生"
-//             }
-//         },
-//         {
-//             "id": 16961896,
-//             "compiled_content": " <a href=\"/users/016ade8e8069\" class=\"maleskine-author\" target=\"_blank\" data-user-slug=\"016ade8e8069\">@vv栩生</a> 你也来找打？",
-//             "created_at": "2017-11-04T12:54:51.000+08:00",
-//             "user": {
-//                 "id": 7938930,
-//                 "slug": "5c614962630b",
-//                 "nickname": "不动心斋"
-//             }
-//         }
-//     ]
