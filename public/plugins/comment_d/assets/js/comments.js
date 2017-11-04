@@ -2,10 +2,56 @@ $(function(){
 
 //        主评论框点击焦点下拉出提交按钮
     var writeFunctionBlockTpl = template('write-function-block-tpl',{});
-    $(".new-comment:first textarea").one('focus',function () {
-        $(".new-comment:first").append(writeFunctionBlockTpl);
-        $(".new-comment:first .write-function-block").slideDown();
+    var tan=1;
+    $(".new-comment:first textarea").on('focus',function () {
+        if(tan){
+                tan=0;
+                $(".new-comment:first").append(writeFunctionBlockTpl);
+                $(".new-comment:first").find('.btn').click(function () {
+                    $(this).trigger("articleCommentReply");
+                })
+                $(".new-comment:first").find(".cancel").click(function () {
+                    $(this).trigger("articleCommentReplyCancel");
+                });
+                $(".new-comment:first .write-function-block").slideDown();
+        };
     })
+
+    $('.comment-list').bind("articleCommentReply",function (e) {
+        $.ajax({
+            url: "http://localhost/thinkc/public/comment01.json",
+            type: 'POST',
+            data: {
+                name:"duan"
+            },
+            dataType: 'json',
+            success: function (data) {
+                var html = template('comment-tpl',{"comments": [data]});
+                var aaa =$("#c-tpl").prepend(html).find(".comment:first").find(".tool-group a").length;
+                console.log(aaa);
+                $("#c-tpl").prepend(html).find(".comment:first").animate({
+                    borderColor:"#ce352c",
+                    color:"#ce352c"
+                }, 100 ).animate({
+                    borderColor:"#f0f0f0",
+                    color:"#333"
+                }, 3000 ).find(".tool-group a:first").on("click",function () {
+                    $(this).trigger("ddd");
+                    console.log("aasd");
+                });
+            }
+        })
+
+
+    })
+    $('.comment-list').bind("articleCommentReplyCancel",function (e) {
+        $(".new-comment:first .write-function-block").slideUp(500,function () {
+            $(".new-comment:first .write-function-block").remove();
+            tan = 1;
+        });
+    })
+
+
 
 
 //当高度合适并且没有评论和加载块时，开始加载评论
@@ -113,7 +159,6 @@ $(function(){
         var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
         $('.comment').bind("mainReply",function (e) {
-
             var html = template('comment-reply-tpl', {});
             var commentEle = $(e.currentTarget);
             var isSubCommentListHide =  commentEle.find('.sub-comment-list').hasClass("hide");
@@ -263,7 +308,6 @@ $(function(){
                 },
                 dataType: 'json',
                 success: function (data) {
-                    console.log(1234);
                     var html = template('comment-single-tpl', data);
                     if(subCommentListEle.find(".more-comment").length){
                         subCommentListEle.find(".sub-comment:last").before(html);
@@ -277,7 +321,7 @@ $(function(){
                     subCommentListEle.find(".sub-tool-group:last a").click(function(){
                         $(this).trigger("childReply");
                     })
-                    subCommentListEle.find(".sub-comment:last").animate({
+                    subCommentListEle.find(".sub-comment:not(.more-comment):last").animate({
                         borderColor:"#ce352c",
                         color:"#ce352c"
                     }, 100 ).animate({
